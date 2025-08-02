@@ -1,25 +1,35 @@
-server: # REST and WS server
+server:
   port: 2333
   address: 0.0.0.0
   http2:
     enabled: false
+  servlet:
+    context-path: /
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
 
 lavalink:
   server:
-    # Generate a strong, random password
     password: "admin123"
-    
     sources:
-      # Disable potentially risky or unnecessary sources
       youtube: false
       soundcloud: true
       bandcamp: true
       twitch: false
       vimeo: false
       nico: false
-      http: false  # Disable to prevent potential IP exposure
+      http: false
       local: false
-
+    
     filters:
       volume: true
       equalizer: true
@@ -32,59 +42,50 @@ lavalink:
       channelMix: false
       lowPass: false
 
-    # Performance Optimization
-    nonAllocatingFrameBuffer: true
-    bufferDurationMs: 400
-    frameBufferDurationMs: 5000
-    opusEncodingQuality: 8
-    resamplingQuality: MEDIUM
-    
-    # Advanced Security and Performance
-    trackStuckThresholdMs: 10000
-    useSeekGhosting: true
-    youtubePlaylistLoadLimit: 6
-    playerUpdateInterval: 5
-    youtubeSearchEnabled: false
-    soundcloudSearchEnabled: true
-    gc-warnings: true
+    performance:
+      nonAllocatingFrameBuffer: true
+      bufferDurationMs: 400
+      frameBufferDurationMs: 5000
+      opusEncodingQuality: 8
+      resamplingQuality: MEDIUM
 
-    # Rate Limiting (Optional but Recommended)
-    ratelimit:
-      ipBlocks: 
-        - "0.0.0.0/0"  # Adjust based on your network requirements
-      strategy: "RotateOnBan"
-      searchTriggersFail: true
-      retryLimit: 3
+    advanced:
+      trackStuckThresholdMs: 10000
+      useSeekGhosting: true
+      youtubePlaylistLoadLimit: 6
+      playerUpdateInterval: 5
+      youtubeSearchEnabled: false
+      soundcloudSearchEnabled: true
+      gc-warnings: true
 
-# Metrics Configuration
 metrics:
   prometheus:
     enabled: true
-    endpoint: /metrics
+    endpoint: /prometheus-metrics
 
-# Logging Configuration
 logging:
   level:
-    root: WARN
-    lavalink: INFO
+    root: INFO
+    lavalink: DEBUG
   file:
     path: ./logs/
-  request:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+
+# Additional health and readiness probes
+health:
+  config:
     enabled: true
-    includeClientInfo: false
-    includeHeaders: false
-    includeQueryString: false
-    includePayload: false
-    maxPayloadLength: 1000
 
-# Optional Error Tracking (Commented out by default)
-# sentry:
-#   dsn: ""
-#   environment: "production"
-
-# Additional Security Headers (if supported)
-# server:
-#   tomcat:
-#     remoteip:
-#       protocol-header: X-Forwarded-Proto
-#       remote-ip-header: X-Forwarded-For
+info:
+  app:
+    name: Lavalink
+    description: Music streaming server
+    version: 4.1.1

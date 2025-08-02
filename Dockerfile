@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.11
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -6,6 +6,9 @@ RUN apt-get update && apt-get install -y \
     curl \
     docker.io \
     netcat-openbsd \
+    net-tools \
+    iputils-ping \
+    dnsutils \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory

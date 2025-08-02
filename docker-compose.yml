@@ -18,7 +18,9 @@ services:
     command: java -jar Lavalink.jar
     restart: unless-stopped
     networks:
-      - lavalink_network
+      lavalink_network:
+        aliases:
+          - lavalink
 
   dashboard:
     build: 

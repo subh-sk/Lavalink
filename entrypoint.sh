@@ -2,21 +2,29 @@
 
 # Function to check Lavalink connectivity
 check_lavalink() {
-    # Method 1: Check TCP connection
-    nc -z lavalink 2333 && return 0
+    # Try multiple connection methods with IP
+    docker_ip=$(getent hosts lavalink | awk '{ print $1 }')
+    
+    if [ -z "$docker_ip" ]; then
+        echo "Could not resolve Lavalink IP"
+        return 1
+    fi
 
-    # Method 2: Use curl to check HTTP endpoint
-    curl -s http://lavalink:2333/metrics > /dev/null && return 0
+    # Method 1: Direct IP connection
+    timeout 5 bash -c "</dev/tcp/$docker_ip/2333" 2>/dev/null && return 0
 
-    # Method 3: Use Python to check connection
+    # Method 2: Curl with IP
+    curl -s --max-time 5 "http://$docker_ip:2333/metrics" > /dev/null && return 0
+
+    # Method 3: Python socket with IP
     python3 -c "
 import socket
 import sys
 
 try:
-    socket.create_connection(('lavalink', 2333), timeout=5)
+    socket.create_connection(('$docker_ip', 2333), timeout=5)
     sys.exit(0)
-except (socket.timeout, ConnectionRefusedError):
+except Exception:
     sys.exit(1)
 " && return 0
 
@@ -25,17 +33,29 @@ except (socket.timeout, ConnectionRefusedError):
 }
 
 # Maximum wait time (in seconds)
-MAX_WAIT=120
-WAIT_INTERVAL=5
+MAX_WAIT=300
+WAIT_INTERVAL=10
 ELAPSED_TIME=0
 
 echo "Waiting for Lavalink to be ready..."
+echo "Attempting to resolve Lavalink container IP..."
 
 # Wait loop with timeout
 while [ $ELAPSED_TIME -lt $MAX_WAIT ]; do
-    if check_lavalink; then
-        echo "Lavalink is up and running!"
-        break
+    # Get Docker network details
+    echo "Network Debug:"
+    docker network ls
+    docker network inspect lavalink_network
+
+    # Resolve IP
+    docker_ip=$(getent hosts lavalink | awk '{ print $1 }')
+    echo "Resolved Lavalink IP: $docker_ip"
+
+    if [ -n "$docker_ip" ]; then
+        if check_lavalink; then
+            echo "Lavalink is up and running!"
+            break
+        fi
     fi
 
     echo "Waiting for Lavalink (${ELAPSED_TIME}s/${MAX_WAIT}s)..."
@@ -46,13 +66,16 @@ done
 # Check if we timed out
 if [ $ELAPSED_TIME -ge $MAX_WAIT ]; then
     echo "ERROR: Lavalink did not become ready within ${MAX_WAIT} seconds"
+    
+    # Detailed debugging
+    echo "Container Status:"
+    docker ps
+    
+    echo "Lavalink Container Logs:"
+    docker logs lavalink
+    
     exit 1
 fi
-
-# Additional diagnostic information
-echo "Lavalink Connectivity Check:"
-nc -z lavalink 2333 && echo "TCP Port 2333: Open" || echo "TCP Port 2333: Closed"
-curl -s http://lavalink:2333/metrics > /dev/null && echo "HTTP Metrics: Accessible" || echo "HTTP Metrics: Not Accessible"
 
 # Start the Flask application
 echo "Starting Lavalink Dashboard..."

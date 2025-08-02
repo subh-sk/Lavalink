@@ -12,6 +12,28 @@ WORKDIR /opt/Lavalink
 COPY LavalinkServer/jar/Lavalink.jar Lavalink.jar
 COPY application.yml ./application.yml
 
+# Create health check script
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+# Check if health check verbosity is enabled\n\
+if [ "$HEALTH_CHECK_VERBOSE" = "true" ]; then\n\
+    echo "Starting Lavalink Health Check..."\n\
+    echo "Checking server port availability..."\n\
+    netstat -tuln | grep :2333 || echo "Port 2333 not yet listening"\n\
+    \n\
+    echo "Attempting to fetch metrics..."\n\
+    wget --spider --server-response http://localhost:2333/metrics 2>&1 || true\n\
+    \n\
+    echo "Checking server process..."\n\
+    ps aux | grep java || echo "No Java process found"\n\
+fi\n\
+\n\
+# Actual health check\n\
+wget --no-verbose --tries=1 --spider http://localhost:2333/metrics\n\
+' > /opt/Lavalink/healthcheck.sh && \
+    chmod +x /opt/Lavalink/healthcheck.sh
+
 # Set proper permissions
 RUN chown -R lavalink:lavalink /opt/Lavalink && \
     mkdir -p /opt/Lavalink/logs && \
@@ -30,31 +52,6 @@ ENV LAVALINK_PASSWORD=admin123 \
 
 # Switch to non-root user
 USER lavalink
-
-# Custom health check script
-COPY <<EOF /opt/Lavalink/healthcheck.sh
-#!/bin/bash
-set -e
-
-# Check if health check verbosity is enabled
-if [ "\$HEALTH_CHECK_VERBOSE" = "true" ]; then
-    echo "Starting Lavalink Health Check..."
-    echo "Checking server port availability..."
-    netstat -tuln | grep :2333 || echo "Port 2333 not yet listening"
-    
-    echo "Attempting to fetch metrics..."
-    wget --spider --server-response http://localhost:2333/metrics 2>&1 || true
-    
-    echo "Checking server process..."
-    ps aux | grep java || echo "No Java process found"
-fi
-
-# Actual health check
-wget --no-verbose --tries=1 --spider http://localhost:2333/metrics
-EOF
-
-# Make the health check script executable
-RUN chmod +x /opt/Lavalink/healthcheck.sh
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \

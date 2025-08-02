@@ -1,0 +1,104 @@
+server: # REST and WS server
+  port: ${SERVER_PORT:2333}
+  address: ${SERVER_ADDRESS:0.0.0.0}
+  http2:
+    enabled: ${HTTP2_ENABLED:false} # Whether to enable HTTP/2 support
+plugins:
+#  name: # Name of the plugin
+#    some_key: some_value # Some key-value pair for the plugin
+#    another_key: another_value
+lavalink:
+  plugins:
+#    - dependency: "com.github.example:example-plugin:1.0.0" # required, the coordinates of your plugin
+#      repository: "https://maven.example.com/releases" # optional, defaults to the Lavalink releases repository by default
+#      snapshot: false # optional, defaults to false, used to tell Lavalink to use the snapshot repository instead of the release repository
+#  pluginsDir: "./plugins" # optional, defaults to "./plugins"
+#  defaultPluginRepository: "https://maven.lavalink.dev/releases" # optional, defaults to the Lavalink release repository
+#  defaultPluginSnapshotRepository: "https://maven.lavalink.dev/snapshots" # optional, defaults to the Lavalink snapshot repository
+  server:
+    password: ${LAVALINK_PASSWORD:admin123}
+    sources:
+      # The default Youtube source is now deprecated and won't receive further updates. Please use https://github.com/lavalink-devs/youtube-source#plugin instead.
+      youtube: ${YOUTUBE_SOURCE_ENABLED:false}
+      bandcamp: ${BANDCAMP_SOURCE_ENABLED:true}
+      soundcloud: ${SOUNDCLOUD_SOURCE_ENABLED:true}
+      twitch: ${TWITCH_SOURCE_ENABLED:true}
+      vimeo: ${VIMEO_SOURCE_ENABLED:true}
+      nico: ${NICO_SOURCE_ENABLED:true}
+      http: ${HTTP_SOURCE_ENABLED:true} # warning: keeping HTTP enabled without a proxy configured could expose your server's IP address.
+      local: ${LOCAL_SOURCE_ENABLED:false}
+    filters: # All filters are enabled by default
+      volume: ${FILTER_VOLUME_ENABLED:true}
+      equalizer: ${FILTER_EQUALIZER_ENABLED:true}
+      karaoke: ${FILTER_KARAOKE_ENABLED:true}
+      timescale: ${FILTER_TIMESCALE_ENABLED:true}
+      tremolo: ${FILTER_TREMOLO_ENABLED:true}
+      vibrato: ${FILTER_VIBRATO_ENABLED:true}
+      distortion: ${FILTER_DISTORTION_ENABLED:true}
+      rotation: ${FILTER_ROTATION_ENABLED:true}
+      channelMix: ${FILTER_CHANNEL_MIX_ENABLED:true}
+      lowPass: ${FILTER_LOW_PASS_ENABLED:true}
+    nonAllocatingFrameBuffer: ${NON_ALLOCATING_FRAME_BUFFER:false} # Setting to true reduces the number of allocations made by each player at the expense of frame rebuilding (e.g. non-instantaneous volume changes)
+    bufferDurationMs: ${BUFFER_DURATION_MS:400} # The duration of the NAS buffer. Higher values fare better against longer GC pauses. Duration <= 0 to disable JDA-NAS. Minimum of 40ms, lower values may introduce pauses.
+    frameBufferDurationMs: ${FRAME_BUFFER_DURATION_MS:5000} # How many milliseconds of audio to keep buffered
+    opusEncodingQuality: ${OPUS_ENCODING_QUALITY:10} # Opus encoder quality. Valid values range from 0 to 10, where 10 is best quality but is the most expensive on the CPU.
+    resamplingQuality: ${RESAMPLING_QUALITY:LOW} # Quality of resampling operations. Valid values are LOW, MEDIUM and HIGH, where HIGH uses the most CPU.
+    trackStuckThresholdMs: ${TRACK_STUCK_THRESHOLD_MS:10000} # The threshold for how long a track can be stuck. A track is stuck if does not return any audio data.
+    useSeekGhosting: ${USE_SEEK_GHOSTING:true} # Seek ghosting is the effect where whilst a seek is in progress, the audio buffer is read from until empty, or until seek is ready.
+    youtubePlaylistLoadLimit: ${YOUTUBE_PLAYLIST_LOAD_LIMIT:6} # Number of pages at 100 each
+    playerUpdateInterval: ${PLAYER_UPDATE_INTERVAL:5} # How frequently to send player updates to clients, in seconds
+    youtubeSearchEnabled: ${YOUTUBE_SEARCH_ENABLED:true}
+    soundcloudSearchEnabled: ${SOUNDCLOUD_SEARCH_ENABLED:true}
+    gc-warnings: ${GC_WARNINGS_ENABLED:true}
+    #ratelimit:
+      #ipBlocks: ["1.0.0.0/8", "..."] # list of ip blocks
+      #excludedIps: ["...", "..."] # ips which should be explicit excluded from usage by lavalink
+      #strategy: "RotateOnBan" # RotateOnBan | LoadBalance | NanoSwitch | RotatingNanoSwitch
+      #searchTriggersFail: true # Whether a search 429 should trigger marking the ip as failing
+      #retryLimit: -1 # -1 = use default lavaplayer value | 0 = infinity | >0 = retry will happen this numbers times
+    #youtubeConfig: # Required for avoiding all age restrictions by YouTube, some restricted videos still can be played without.
+      #email: "" # Email of Google account
+      #password: "" # Password of Google account
+    #httpConfig: # Useful for blocking bad-actors from ip-grabbing your music node and attacking it, this way only the http proxy will be attacked
+      #proxyHost: "localhost" # Hostname of the proxy, (ip or domain)
+      #proxyPort: 3128 # Proxy port, 3128 is the default for squidProxy
+      #proxyUser: "" # Optional user for basic authentication fields, leave blank if you don't use basic auth
+      #proxyPassword: "" # Password for basic authentication
+    timeouts:
+      connectTimeoutMs: 3000
+      connectionRequestTimeoutMs: 3000
+      socketTimeoutMs: 3000
+
+metrics:
+  prometheus:
+    enabled: ${PROMETHEUS_METRICS_ENABLED:false}
+    endpoint: ${PROMETHEUS_METRICS_ENDPOINT:/metrics}
+
+sentry:
+  dsn: ${SENTRY_DSN:""}
+  environment: ${SENTRY_ENVIRONMENT:""}
+#  tags:
+#    some_key: some_value
+#    another_key: another_value
+
+logging:
+  file:
+    path: ${LOGGING_FILE_PATH:./logs/}
+
+  level:
+    root: ${ROOT_LOG_LEVEL:INFO}
+    lavalink: ${LAVALINK_LOG_LEVEL:INFO}
+
+  request:
+    enabled: ${REQUEST_LOGGING_ENABLED:true}
+    includeClientInfo: ${REQUEST_LOG_CLIENT_INFO:true}
+    includeHeaders: ${REQUEST_LOG_HEADERS:false}
+    includeQueryString: ${REQUEST_LOG_QUERY_STRING:true}
+    includePayload: ${REQUEST_LOG_PAYLOAD:true}
+    maxPayloadLength: ${REQUEST_LOG_MAX_PAYLOAD_LENGTH:10000}
+
+
+  logback:
+    rollingpolicy:
+      max-file-size: ${LOG_MAX_FILE_SIZE:1GB}
+      max-history: ${LOG_MAX_HISTORY:30}

@@ -16,7 +16,6 @@ build/*
 /plugin-api/out/
 /protocol/build/
 /protocol/out/
-application.yml
 LavalinkServer/plugins
 .cache/
 site/

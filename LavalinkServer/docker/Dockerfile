@@ -1,15 +1,30 @@
 FROM eclipse-temurin:18-jre-jammy
 
-# Run as non-root user
+# Install necessary tools and create non-root user
 RUN groupadd -g 322 lavalink && \
     useradd -r -u 322 -g lavalink lavalink
 
+# Set working directory
 WORKDIR /opt/Lavalink
 
-RUN chown -R lavalink:lavalink /opt/Lavalink
+# Copy application files
+COPY LavalinkServer/jar/Lavalink.jar Lavalink.jar
+COPY application.yml ./application.yml
 
+# Set proper permissions
+RUN chown -R lavalink:lavalink /opt/Lavalink && \
+    mkdir -p /opt/Lavalink/logs && \
+    chown -R lavalink:lavalink /opt/Lavalink/logs
+
+# Expose the Lavalink port
+EXPOSE 2333
+
+# Switch to non-root user
 USER lavalink
 
-COPY LavalinkServer/jar/Lavalink.jar Lavalink.jar
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:2333/metrics || exit 1
 
+# Run the application
 ENTRYPOINT ["java", "-jar", "Lavalink.jar"]

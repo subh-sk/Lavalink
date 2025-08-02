@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  lavalink:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: lavalink
+    volumes:
+      - ./lavalink/Lavalink.jar:/opt/Lavalink/Lavalink.jar
+      - ./application.yml:/opt/Lavalink/application.yml
+      - ./logs:/opt/Lavalink/logs
+    working_dir: /opt/Lavalink
+    ports:
+      - "2333:2333"
+    environment:
+      - LAVALINK_PASSWORD=admin123
+      - SERVER_PORT=2333
+      - SERVER_ADDRESS=0.0.0.0
+      - YOUTUBE_SOURCE_ENABLED=true
+      - SOUNDCLOUD_SOURCE_ENABLED=true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:2333/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

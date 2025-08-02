@@ -12,39 +12,14 @@ services:
     ports:
       - "2333:2333"
     environment:
-      # Generate a secure, random password
-      - LAVALINK_PASSWORD=L@v@link_${RANDOM_SECURE_TOKEN:-default}_2024!
+      - LAVALINK_PASSWORD=admin123
       - SERVER_PORT=2333
       - SERVER_ADDRESS=0.0.0.0
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
     restart: unless-stopped
+    command: java -jar Lavalink.jar
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:2333/metrics"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    security_opt:
-      - no-new-privileges:true
-    read_only: true
-    tmpfs:
-      - /tmp
-      - /run
-    cap_drop:
-      - ALL
-    networks:
-      - lavalink-network
-
-networks:
-  lavalink-network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16

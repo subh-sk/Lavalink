@@ -19,7 +19,7 @@ lavalink:
     password: ${LAVALINK_PASSWORD:admin123}
     sources:
       # The default Youtube source is now deprecated and won't receive further updates. Please use https://github.com/lavalink-devs/youtube-source#plugin instead.
-      youtube: ${YOUTUBE_SOURCE_ENABLED:false}
+      youtube: ${YOUTUBE_SOURCE_ENABLED:true}
       bandcamp: ${BANDCAMP_SOURCE_ENABLED:true}
       soundcloud: ${SOUNDCLOUD_SOURCE_ENABLED:true}
       twitch: ${TWITCH_SOURCE_ENABLED:true}

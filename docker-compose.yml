@@ -17,10 +17,6 @@ services:
       - SERVER_ADDRESS=0.0.0.0
     command: java -jar Lavalink.jar
     restart: unless-stopped
-    networks:
-      lavalink_network:
-        aliases:
-          - lavalink
 
   dashboard:
     build: 
@@ -29,15 +25,6 @@ services:
     container_name: lavalink-dashboard
     ports:
       - "5000:5000"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./lavalink_configs.json:/app/lavalink_configs.json
     depends_on:
       - lavalink
     restart: unless-stopped
-    networks:
-      - lavalink_network
-
-networks:
-  lavalink_network:
-    driver: bridge

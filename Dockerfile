@@ -1,14 +1,10 @@
-FROM python:3.11
+FROM python:3.9-slim
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
-    docker.io \
     netcat-openbsd \
-    net-tools \
-    iputils-ping \
-    dnsutils \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -29,9 +25,6 @@ RUN chmod +x /entrypoint.sh
 
 # Expose the dashboard port
 EXPOSE 5000
-
-# Volume for Docker socket (to interact with Docker)
-VOLUME ["/var/run/docker.sock"]
 
 # Environment variables
 ENV FLASK_APP=app.py

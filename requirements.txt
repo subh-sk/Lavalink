@@ -3,3 +3,5 @@ flask-cors
 docker
 psutil
 websocket-client
+gunicorn
+requests

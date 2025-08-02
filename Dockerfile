@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     curl \
     docker.io \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -18,6 +19,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app.py .
 COPY templates/ ./templates/
 COPY static/ ./static/
+COPY entrypoint.sh /entrypoint.sh
+
+# Make entrypoint script executable
+RUN chmod +x /entrypoint.sh
 
 # Expose the dashboard port
 EXPOSE 5000
@@ -28,10 +33,6 @@ VOLUME ["/var/run/docker.sock"]
 # Environment variables
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
-
-# Create an entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 
 # Use the entrypoint script
 ENTRYPOINT ["/entrypoint.sh"]

@@ -17,6 +17,8 @@ services:
       - SERVER_ADDRESS=0.0.0.0
     command: java -jar Lavalink.jar
     restart: unless-stopped
+    networks:
+      - lavalink_network
 
   dashboard:
     build: 
@@ -31,3 +33,9 @@ services:
     depends_on:
       - lavalink
     restart: unless-stopped
+    networks:
+      - lavalink_network
+
+networks:
+  lavalink_network:
+    driver: bridge

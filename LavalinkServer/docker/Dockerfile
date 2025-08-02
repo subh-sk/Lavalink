@@ -9,7 +9,7 @@ WORKDIR /opt/Lavalink
 
 # Copy application files
 COPY LavalinkServer/jar/Lavalink.jar Lavalink.jar
-COPY application.yml ./application.yml
+# COPY application.yml ./application.yml
 
 # Set proper permissions
 RUN chown -R lavalink:lavalink /opt/Lavalink && \

@@ -48,7 +48,9 @@ ENV LAVALINK_PASSWORD=admin123 \
     SERVER_ADDRESS=0.0.0.0 \
     YOUTUBE_SOURCE_ENABLED=true \
     SOUNDCLOUD_SOURCE_ENABLED=true \
-    HEALTH_CHECK_VERBOSE=true
+    HEALTH_CHECK_VERBOSE=true \
+    SENTRY_DSN="" \
+    SENTRY_ENVIRONMENT=""
 
 # Switch to non-root user
 USER lavalink

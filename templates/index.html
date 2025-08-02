@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lavalink Dashboard & API Tester</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding-top: 50px; }
+        .dashboard-card { margin-bottom: 20px; }
+        #response-container { 
+            max-height: 400px; 
+            overflow-y: auto; 
+            background-color: #f4f4f4;
+            padding: 10px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <ul class="nav nav-tabs" id="dashboardTabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#status">Server Status</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#api-tester">API Tester</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#configs">Configurations</a>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-3">
+            <!-- Server Status Tab -->
+            <div id="status" class="tab-pane fade show active">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card dashboard-card">
+                            <div class="card-header">Server Status</div>
+                            <div class="card-body">
+                                <p>Status: <span id="server-status" class="badge bg-secondary">Loading...</span></p>
+                                <div class="btn-group" role="group">
+                                    <button onclick="controlLavalink('start')" class="btn btn-success">Start</button>
+                                    <button onclick="controlLavalink('stop')" class="btn btn-danger">Stop</button>
+                                    <button onclick="controlLavalink('restart')" class="btn btn-warning">Restart</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card dashboard-card">
+                            <div class="card-header">System Information</div>
+                            <div class="card-body">
+                                <pre id="system-info">Loading...</pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card dashboard-card">
+                            <div class="card-header">Container Details</div>
+                            <div class="card-body">
+                                <pre id="container-details">Loading...</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Tester Tab -->
+            <div id="api-tester" class="tab-pane fade">
+                <div class="card">
+                    <div class="card-header">Lavalink Connection Tester</div>
+                    <div class="card-body">
+                        <form id="connection-test-form">
+                            <div class="mb-3">
+                                <label class="form-label">Host</label>
+                                <input type="text" class="form-control" id="test-host" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Port</label>
+                                <input type="number" class="form-control" id="test-port" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" id="test-password" value="admin123">
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="testLavalinkConnection()">
+                                Test Connection
+                            </button>
+                        </form>
+
+                        <div class="mt-3">
+                            <h5>Response:</h5>
+                            <div id="connection-response" class="card">
+                                <pre id="response-container" class="card-body">
+No test performed yet.
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configurations Tab -->
+            <div id="configs" class="tab-pane fade">
+                <div class="card">
+                    <div class="card-header">Saved Configurations</div>
+                    <div class="card-body">
+                        <table class="table" id="configs-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Host</th>
+                                    <th>Port</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="configs-list">
+                                <!-- Configurations will be dynamically populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function fetchStatus() {
+            try {
+                const [statusResponse, systemResponse] = await Promise.all([
+                    fetch('/api/status'),
+                    fetch('/api/system-info')
+                ]);
+                
+                const statusData = await statusResponse.json();
+                const systemData = await systemResponse.json();
+                
+                // Update server status
+                const statusSpan = document.getElementById('server-status');
+                statusSpan.textContent = statusData.status;
+                statusSpan.className = `badge ${statusData.running ? 'bg-success' : 'bg-danger'}`;
+                
+                // Update system info
+                document.getElementById('system-info').textContent = JSON.stringify(systemData, null, 2);
+                
+                // Update container details
+                document.getElementById('container-details').textContent = JSON.stringify(statusData, null, 2);
+            } catch (error) {
+                console.error('Error fetching status:', error);
+            }
+        }
+
+        async function fetchLogs() {
+            const lines = document.getElementById('log-lines').value;
+            try {
+                const response = await fetch(`/api/logs?lines=${lines}`);
+                const data = await response.json();
+                document.getElementById('logs-container').textContent = data.logs;
+            } catch (error) {
+                console.error('Error fetching logs:', error);
+            }
+        }
+
+        async function controlLavalink(action) {
+            try {
+                const response = await fetch('/api/control', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`Lavalink ${action}ed successfully`);
+                    fetchStatus();
+                } else {
+                    alert(`Failed to ${action} Lavalink`);
+                }
+            } catch (error) {
+                console.error(`Error ${action}ing Lavalink:`, error);
+            }
+        }
+
+        // Fetch and populate connection details
+        async function fetchConnectionDetails() {
+            try {
+                const response = await fetch('/api/lavalink/connection');
+                const details = await response.json();
+                
+                document.getElementById('test-host').value = details.host;
+                document.getElementById('test-port').value = details.port;
+            } catch (error) {
+                console.error('Error fetching connection details:', error);
+            }
+        }
+
+        // Test Lavalink Connection
+        async function testLavalinkConnection() {
+            const host = document.getElementById('test-host').value;
+            const port = document.getElementById('test-port').value;
+            const password = document.getElementById('test-password').value;
+            const responseContainer = document.getElementById('response-container');
+
+            try {
+                const response = await fetch('/api/lavalink/test-connection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ host, port, password })
+                });
+
+                const result = await response.json();
+                responseContainer.textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                responseContainer.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Fetch and display saved configurations
+        async function fetchConfigurations() {
+            try {
+                const response = await fetch('/api/lavalink/configs');
+                const configs = await response.json();
+                const configsList = document.getElementById('configs-list');
+                
+                // Clear existing rows
+                configsList.innerHTML = '';
+
+                // Populate configurations
+                Object.entries(configs).forEach(([id, config]) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${config.name || 'Unnamed'}</td>
+                        <td>${config.host}</td>
+                        <td>${config.port}</td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="loadConfig('${id}')">Load</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteConfig('${id}')">Delete</button>
+                        </td>
+                    `;
+                    configsList.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching configurations:', error);
+            }
+        }
+
+        // Load configuration into tester
+        function loadConfig(id) {
+            const configs = JSON.parse(localStorage.getItem('lavalink-configs') || '{}');
+            const config = configs[id];
+            if (config) {
+                document.getElementById('test-host').value = config.host;
+                document.getElementById('test-port').value = config.port;
+                document.getElementById('test-password').value = config.password;
+            }
+        }
+
+        // Delete configuration
+        async function deleteConfig(id) {
+            try {
+                const response = await fetch(`/api/lavalink/configs/${id}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                alert(result.message);
+                fetchConfigurations();
+            } catch (error) {
+                console.error('Error deleting configuration:', error);
+            }
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchStatus();
+            fetchLogs();
+            fetchConnectionDetails();
+            fetchConfigurations();
+        });
+
+        // Periodic updates
+        setInterval(fetchStatus, 30000);  // Update status every 30 seconds
+        setInterval(fetchLogs, 60000);    // Update logs every minute
+    </script>
+</body>
+</html>

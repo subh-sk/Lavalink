@@ -1,0 +1,58 @@
+2025-08-02 14:20:00,405 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.2:5000
+2025-08-02 14:20:00,405 - INFO - [33mPress CTRL+C to quit[0m
+2025-08-02 14:20:00,414 - INFO -  * Restarting with watchdog (windowsapi)
+2025-08-02 14:20:01,252 - WARNING -  * Debugger is active!
+2025-08-02 14:20:01,257 - INFO -  * Debugger PIN: 809-706-726
+2025-08-02 14:20:03,923 - INFO - 127.0.0.1 - - [02/Aug/2025 14:20:03] "GET / HTTP/1.1" 200 -
+2025-08-02 14:20:04,460 - INFO - 127.0.0.1 - - [02/Aug/2025 14:20:04] "GET /api/lavalink/configs HTTP/1.1" 200 -
+2025-08-02 14:20:04,461 - ERROR - Error getting Lavalink status: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:20:04,463 - INFO - 127.0.0.1 - - [02/Aug/2025 14:20:04] "GET /api/status HTTP/1.1" 200 -
+2025-08-02 14:20:04,466 - ERROR - Error generating connection details: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:20:04,467 - INFO - 127.0.0.1 - - [02/Aug/2025 14:20:04] "GET /api/lavalink/connection HTTP/1.1" 200 -
+2025-08-02 14:20:04,485 - INFO - 127.0.0.1 - - [02/Aug/2025 14:20:04] "GET /api/system-info HTTP/1.1" 200 -
+2025-08-02 14:20:06,618 - ERROR - Error starting Lavalink: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:20:06,619 - INFO - 127.0.0.1 - - [02/Aug/2025 14:20:06] "POST /api/control HTTP/1.1" 200 -
+2025-08-02 14:20:11,895 - INFO - 127.0.0.1 - - [02/Aug/2025 14:20:11] "POST /api/lavalink/test-connection HTTP/1.1" 200 -
+2025-08-02 14:20:34,486 - INFO - 127.0.0.1 - - [02/Aug/2025 14:20:34] "GET /api/system-info HTTP/1.1" 200 -
+2025-08-02 14:20:34,488 - ERROR - Error getting Lavalink status: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:20:34,488 - INFO - 127.0.0.1 - - [02/Aug/2025 14:20:34] "GET /api/status HTTP/1.1" 200 -
+2025-08-02 14:21:04,506 - INFO - 127.0.0.1 - - [02/Aug/2025 14:21:04] "GET /api/system-info HTTP/1.1" 200 -
+2025-08-02 14:21:04,511 - ERROR - Error getting Lavalink status: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:21:04,514 - INFO - 127.0.0.1 - - [02/Aug/2025 14:21:04] "GET /api/status HTTP/1.1" 200 -
+2025-08-02 14:21:26,571 - INFO -  * Detected change in 'd:\\Programming\\PYTHON\\Projects\\AI\\Assistant\\virtual_assistant\\Nara_Virtual\\Nara_dc_bot\\lavalink\\Lavalink-4.1.1\\app.py', reloading
+2025-08-02 14:21:26,576 - INFO -  * Detected change in 'd:\\Programming\\PYTHON\\Projects\\AI\\Assistant\\virtual_assistant\\Nara_Virtual\\Nara_dc_bot\\lavalink\\Lavalink-4.1.1\\app.py', reloading
+2025-08-02 14:21:27,687 - INFO -  * Restarting with watchdog (windowsapi)
+2025-08-02 14:21:28,866 - WARNING -  * Debugger is active!
+2025-08-02 14:21:28,872 - INFO -  * Debugger PIN: 809-706-726
+2025-08-02 14:21:34,516 - ERROR - Error getting Lavalink status: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:21:34,520 - INFO - 127.0.0.1 - - [02/Aug/2025 14:21:34] "GET /api/status HTTP/1.1" 200 -
+2025-08-02 14:21:34,564 - INFO - 127.0.0.1 - - [02/Aug/2025 14:21:34] "GET /api/system-info HTTP/1.1" 200 -
+2025-08-02 14:21:44,444 - INFO - 127.0.0.1 - - [02/Aug/2025 14:21:44] "GET / HTTP/1.1" 200 -
+2025-08-02 14:21:44,791 - INFO - 127.0.0.1 - - [02/Aug/2025 14:21:44] "GET /api/system-info HTTP/1.1" 200 -
+2025-08-02 14:21:44,793 - INFO - 127.0.0.1 - - [02/Aug/2025 14:21:44] "GET /api/lavalink/configs HTTP/1.1" 200 -
+2025-08-02 14:21:44,794 - ERROR - Error getting Lavalink status: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:21:44,794 - INFO - 127.0.0.1 - - [02/Aug/2025 14:21:44] "GET /api/status HTTP/1.1" 200 -
+2025-08-02 14:21:44,795 - ERROR - Error generating connection details: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:21:44,795 - INFO - 127.0.0.1 - - [02/Aug/2025 14:21:44] "GET /api/lavalink/connection HTTP/1.1" 200 -
+2025-08-02 14:21:51,834 - ERROR - Lavalink connection test failed: [WinError 10061] No connection could be made because the target machine actively refused it
+2025-08-02 14:21:51,835 - INFO - 127.0.0.1 - - [02/Aug/2025 14:21:51] "POST /api/lavalink/test-connection HTTP/1.1" 200 -
+2025-08-02 14:21:55,503 - ERROR - Lavalink connection test failed: [WinError 10061] No connection could be made because the target machine actively refused it
+2025-08-02 14:21:55,505 - INFO - 127.0.0.1 - - [02/Aug/2025 14:21:55] "POST /api/lavalink/test-connection HTTP/1.1" 200 -
+2025-08-02 14:22:15,478 - INFO - 127.0.0.1 - - [02/Aug/2025 14:22:15] "GET /api/system-info HTTP/1.1" 200 -
+2025-08-02 14:22:15,478 - ERROR - Error getting Lavalink status: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:22:15,479 - INFO - 127.0.0.1 - - [02/Aug/2025 14:22:15] "GET /api/status HTTP/1.1" 200 -
+2025-08-02 14:22:45,476 - ERROR - Error getting Lavalink status: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:22:45,477 - INFO - 127.0.0.1 - - [02/Aug/2025 14:22:45] "GET /api/system-info HTTP/1.1" 200 -
+2025-08-02 14:22:45,477 - INFO - 127.0.0.1 - - [02/Aug/2025 14:22:45] "GET /api/status HTTP/1.1" 200 -
+2025-08-02 14:23:15,482 - INFO - 127.0.0.1 - - [02/Aug/2025 14:23:15] "GET /api/system-info HTTP/1.1" 200 -
+2025-08-02 14:23:15,484 - ERROR - Error getting Lavalink status: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:23:15,485 - INFO - 127.0.0.1 - - [02/Aug/2025 14:23:15] "GET /api/status HTTP/1.1" 200 -
+2025-08-02 14:23:45,483 - INFO - 127.0.0.1 - - [02/Aug/2025 14:23:45] "GET /api/system-info HTTP/1.1" 200 -
+2025-08-02 14:23:45,484 - ERROR - Error getting Lavalink status: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:23:45,487 - INFO - 127.0.0.1 - - [02/Aug/2025 14:23:45] "GET /api/status HTTP/1.1" 200 -
+2025-08-02 14:24:15,483 - INFO - 127.0.0.1 - - [02/Aug/2025 14:24:15] "GET /api/system-info HTTP/1.1" 200 -
+2025-08-02 14:24:15,485 - ERROR - Error getting Lavalink status: Error while fetching server API version: Not supported URL scheme http+docker
+2025-08-02 14:24:15,487 - INFO - 127.0.0.1 - - [02/Aug/2025 14:24:15] "GET /api/status HTTP/1.1" 200 -

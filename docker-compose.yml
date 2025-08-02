@@ -12,24 +12,22 @@ services:
     ports:
       - "2333:2333"
     environment:
-      - JAVA_TOOL_OPTIONS=-Xmx512m -Xms256m
       - LAVALINK_PASSWORD=admin123
       - SERVER_PORT=2333
       - SERVER_ADDRESS=0.0.0.0
-      - SPRING_CONFIG_LOCATION=file:/opt/Lavalink/application.yml
-    command: >
-      java 
-      -jar Lavalink.jar 
-      --spring.config.location=file:/opt/Lavalink/application.yml
+    command: java -jar Lavalink.jar
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:2333/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+
+  dashboard:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: lavalink-dashboard
+    ports:
+      - "5000:5000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./lavalink_configs.json:/app/lavalink_configs.json
+    depends_on:
+      - lavalink
+    restart: unless-stopped

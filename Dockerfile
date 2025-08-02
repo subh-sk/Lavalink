@@ -1,63 +1,37 @@
-FROM eclipse-temurin:18-jre-jammy
+FROM python:3.9-slim
 
-# Install necessary tools and create non-root user
-RUN groupadd -g 322 lavalink && \
-    useradd -r -u 322 -g lavalink lavalink && \
-    apt-get update && apt-get install -y wget curl net-tools procps
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    docker.io \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
-WORKDIR /opt/Lavalink
+WORKDIR /app
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
-COPY lavalink/Lavalink.jar Lavalink.jar
-COPY application.yml ./application.yml
+COPY app.py .
+COPY templates/ ./templates/
+COPY static/ ./static/
 
-# Create health check script
-RUN echo '#!/bin/bash\n\
-set -e\n\
-\n\
-# Check if health check verbosity is enabled\n\
-if [ "$HEALTH_CHECK_VERBOSE" = "true" ]; then\n\
-    echo "Starting Lavalink Health Check..."\n\
-    echo "Checking server port availability..."\n\
-    netstat -tuln | grep :2333 || echo "Port 2333 not yet listening"\n\
-    \n\
-    echo "Attempting to fetch metrics..."\n\
-    wget --spider --server-response http://localhost:2333/metrics 2>&1 || true\n\
-    \n\
-    echo "Checking server process..."\n\
-    ps aux | grep java || echo "No Java process found"\n\
-fi\n\
-\n\
-# Actual health check\n\
-wget --no-verbose --tries=1 --spider http://localhost:2333/metrics\n\
-' > /opt/Lavalink/healthcheck.sh && \
-    chmod +x /opt/Lavalink/healthcheck.sh
+# Expose the dashboard port
+EXPOSE 5000
 
-# Set proper permissions
-RUN chown -R lavalink:lavalink /opt/Lavalink && \
-    mkdir -p /opt/Lavalink/logs && \
-    chown -R lavalink:lavalink /opt/Lavalink/logs
+# Volume for Docker socket (to interact with Docker)
+VOLUME ["/var/run/docker.sock"]
 
-# Expose the Lavalink port
-EXPOSE 2333
+# Environment variables
+ENV FLASK_APP=app.py
+ENV FLASK_RUN_HOST=0.0.0.0
 
-# Environment variables with default values
-ENV LAVALINK_PASSWORD=admin123 \
-    SERVER_PORT=2333 \
-    SERVER_ADDRESS=0.0.0.0 \
-    YOUTUBE_SOURCE_ENABLED=true \
-    SOUNDCLOUD_SOURCE_ENABLED=true \
-    HEALTH_CHECK_VERBOSE=true \
-    SENTRY_DSN="" \
-    SENTRY_ENVIRONMENT=""
+# Create an entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Switch to non-root user
-USER lavalink
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD /opt/Lavalink/healthcheck.sh
-
-# Run the application
-ENTRYPOINT ["java", "-jar", "Lavalink.jar"]
+# Use the entrypoint script
+ENTRYPOINT ["/entrypoint.sh"]

@@ -2,27 +2,49 @@ version: '3.8'
 
 services:
   lavalink:
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    image: eclipse-temurin:18-jre-jammy
     container_name: lavalink
     volumes:
-      - ./lavalink/Lavalink.jar:/opt/Lavalink/Lavalink.jar
+      - ./LavalinkServer/jar/Lavalink.jar:/opt/Lavalink/Lavalink.jar
       - ./application.yml:/opt/Lavalink/application.yml
       - ./logs:/opt/Lavalink/logs
     working_dir: /opt/Lavalink
     ports:
       - "2333:2333"
     environment:
-      - LAVALINK_PASSWORD=admin123
+      # Generate a secure, random password
+      - LAVALINK_PASSWORD=L@v@link_${RANDOM_SECURE_TOKEN:-default}_2024!
       - SERVER_PORT=2333
       - SERVER_ADDRESS=0.0.0.0
-      - YOUTUBE_SOURCE_ENABLED=true
-      - SOUNDCLOUD_SOURCE_ENABLED=true
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:2333/"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:2333/metrics"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
+    cap_drop:
+      - ALL
+    networks:
+      - lavalink-network
+
+networks:
+  lavalink-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
